@@ -1,0 +1,101 @@
+-- -- Create Schema
+-- -- CREATE SCHEMA istd;
+--
+-- -- --Setup for Superadmin
+-- -- CREATE ROLE role_superadmin;
+-- -- GRANT postgres TO role_superadmin;
+-- ALTER USER role_superadmin WITH SUPERUSER;
+-- ALTER USER role_superadmin WITH NOSUPERUSER;
+-- CREATE ROLE user_superadmin WITH LOGIN PASSWORD 'sangat_sulit_ditebak101';
+--
+-- -- Setup for Admin
+-- CREATE ROLE role_admin;
+-- CREATE ROLE user_admin_1 WITH LOGIN PASSWORD 'sulitditebak101';
+-- CREATE ROLE user_admin_2 WITH LOGIN PASSWORD 'sulitditebak102';
+--
+-- -- Create roles
+-- CREATE ROLE role_hr_analyst;
+-- CREATE ROLE role_hr_user;
+-- CREATE ROLE role_hr_trainee;
+-- CREATE ROLE role_sales_analyst;
+-- CREATE ROLE role_sales_user;
+-- CREATE ROLE role_sales_trainee;
+-- CREATE ROLE role_istd_analyst; 
+-- CREATE ROLE role_istd_user;
+-- CREATE ROLE role_istd_trainee;
+--
+-- -- Create users
+-- CREATE ROLE user_hr_user_1 WITH LOGIN PASSWORD 'password100';
+-- CREATE ROLE user_hr_user_2 WITH LOGIN PASSWORD 'password101';
+-- CREATE ROLE user_hr_user_3 WITH LOGIN PASSWORD 'password102';
+-- CREATE ROLE user_hr_analyst_1 WITH LOGIN PASSWORD 'password103';
+-- CREATE ROLE user_hr_analyst_2 WITH LOGIN PASSWORD 'password104';
+-- CREATE ROLE user_hr_trainee_1 WITH LOGIN PASSWORD 'password105';
+-- CREATE ROLE user_hr_trainee_2 WITH LOGIN PASSWORD 'password106';
+--
+--
+-- CREATE ROLE user_istd_user_1 WITH LOGIN PASSWORD 'password100';
+-- CREATE ROLE user_istd_user_2 WITH LOGIN PASSWORD 'password101';
+-- CREATE ROLE user_istd_user_3 WITH LOGIN PASSWORD 'password102';
+-- CREATE ROLE user_istd_analyst_1 WITH LOGIN PASSWORD 'password103';
+-- CREATE ROLE user_istd_analyst_2 WITH LOGIN PASSWORD 'password104';
+-- CREATE ROLE user_istd_trainee_1 WITH LOGIN PASSWORD 'password105';
+-- CREATE ROLE user_istd_trainee_2 WITH LOGIN PASSWORD 'password106';
+--
+-- CREATE ROLE user_sales_user_1 WITH LOGIN PASSWORD 'password100';
+-- CREATE ROLE user_sales_user_2 WITH LOGIN PASSWORD 'password101';
+-- CREATE ROLE user_sales_user_3 WITH LOGIN PASSWORD 'password102';
+-- CREATE ROLE user_sales_analyst_1 WITH LOGIN PASSWORD 'password103';
+-- CREATE ROLE user_sales_analyst_2 WITH LOGIN PASSWORD 'password104';
+-- CREATE ROLE user_sales_trainee_1 WITH LOGIN PASSWORD 'password105';
+-- CREATE ROLE user_sales_trainee_2 WITH LOGIN PASSWORD 'password106';
+--
+--
+-- -- Assign role to user / Grant privileges to user
+-- GRANT role_istd_user TO user_istd_user_1;
+-- GRANT role_istd_user TO user_istd_user_2;
+-- GRANT role_istd_user TO user_istd_user_3;
+-- GRANT role_istd_analyst TO user_istd_analyst_1;
+-- GRANT role_istd_analyst TO user_istd_analyst_2;
+-- GRANT role_istd_trainee TO user_istd_trainee_1;
+-- GRANT role_istd_trainee TO user_istd_trainee_2;
+--
+-- -- Grant connection to DB
+--
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_admin_1;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_hr_user_1;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_hr_user_2;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_hr_user_3;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_hr_analyst_1 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_hr_analyst_2 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_hr_trainee_1 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_hr_trainee_2 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_istd_user_1 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_istd_user_2 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_istd_user_3 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_istd_analyst_1 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_istd_analyst_2 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_istd_trainee_1 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_istd_trainee_2 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_sales_user_1 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_sales_user_2 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_sales_user_3 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_sales_analyst_1 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_sales_analyst_2 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_sales_trainee_1 ;
+-- GRANT CONNECT ON DATABASE tmmin_training_db TO user_sales_trainee_2 ;
+--
+--
+-- ALTER DEFAULT PRIVILEGES 
+-- GRANT ALL PRIVILEGES ON DATABASE tmmin_training_db TO role_admin;
+
+-- ALTER DEFAULT PRIVILEGES IN SCHEMA istd
+-- GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA istd TO role_istd_analyst;
+
+-- ALTER DEFAULT PRIVILEGES IN SCHEMA istd
+-- GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA istd TO role_istd_user;
+--
+
+-- GRANT USAGE ON SCHEMA istd TO role_istd_user;
+-- GRANT USAGE ON SCHEMA istd TO role_istd_analyst;
+-- GRANT USAGE ON SCHEMA istd TO role_istd_trainee;

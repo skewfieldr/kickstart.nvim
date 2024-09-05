@@ -1,0 +1,36 @@
+-- CREATE OR REPLACE PROCEDURE istd.assign_inventory(
+-- 	p_assignee_employee_id int
+-- 	,p_assignor_employee_id int
+-- 	,p_inventory_id int
+-- )
+
+CALL istd.assign_inventory(5,11,7);
+
+-- SELECT id
+-- 	, inventory_id
+-- 	, assignee_employee_id
+-- 	, assignor_employee_id
+-- 	, assignment_type 
+-- 	, is_active
+-- 	, created_at       
+-- 	, created_by
+-- FROM istd.inventory_assignment_logs;
+--
+-- SELECT t1.id
+-- 	-- , inventory_id
+-- 	, t2.code AS inventory_code
+-- 	, t2.name AS inventory_name
+-- 	-- , assigned_employee_id
+-- 	, t3.name AS assignee_name
+-- 	-- , assignee_id
+-- 	, t4.name AS assignor_name
+-- 	, assignment_type 
+-- 	-- , is_active
+-- 	, t1.created_at       
+-- 	, t1.created_by
+-- FROM istd.inventory_assignment_logs t1
+-- INNER JOIN istd.inventories t2 ON t1.inventory_id = t2.id
+-- INNER JOIN istd.employees t3 ON t1.assignee_employee_id = t3.id
+-- INNER JOIN istd.employees t4 ON t1.assignor_employee_id = t4.id
+-- WHERE assignment_type = 'Assigned'
+-- ;

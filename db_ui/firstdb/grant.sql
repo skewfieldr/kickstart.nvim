@@ -1,0 +1,9 @@
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE istd.employees TO user_admin_1;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE istd.inventories TO user_admin_1;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE istd.inventory_assignment_logs TO user_admin_1;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE istd.positions TO user_admin_1;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO user_admin_1;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA hr TO user_admin_1;
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA sales TO user_admin_1;
+
+SELECT * FROM istd.employees;

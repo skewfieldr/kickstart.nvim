@@ -1,0 +1,2 @@
+[{"url": "postgres://user_istd_analyst_1:password101@localhost:5432/firstdb", "name": "firstdb"}, 
+  {"url": "postgres://user_istd_trainee_1:pwd123@tmmin-trainingdb.cfyeea4821y9.ap-southeast-1.rds.amazonaws.com/tmmin_training_db", "name": "tmmin-trainingdb"}]
