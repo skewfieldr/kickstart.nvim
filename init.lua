@@ -185,10 +185,10 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+-- vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+-- vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -215,7 +215,28 @@ vim.api.nvim_set_keymap('n', '<leader>dr', ':DBUIRenameBuffer<CR>', { noremap = 
 vim.api.nvim_set_keymap('n', '<leader>dl', ':DBUILastQueryInfo<CR>', { noremap = true, silent = true })
 
 -- nvim-tree keybinding
-vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+
+-- JSON Formatting
+-- Enable syntax-based folding for .json files (and more in the future)
+-- Autoformat on save
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = { '*.json', '*.jsonc' },
+  callback = function()
+    vim.lsp.buf.format { async = false }
+  end,
+})
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+  pattern = { 'json' }, -- You can add more filetypes here later
+  callback = function()
+    -- vim.opt_local.foldmethod = 'syntax'
+    vim.opt.foldenable = false
+  end,
+})
+
+-- Enable Treesitter-based folding globally (for files that support it)
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -349,24 +370,23 @@ require('lazy').setup({
     'nvim-tree/nvim-web-devicons',
   },
 
-  {
-    'nvim-tree/nvim-tree.lua',
-    requires = {
-      'nvim-tree/nvim-web-devicons',
-    },
-    config = function()
-      require('nvim-tree').setup {
-        view = {
-          width = 30,
-          side = 'left',
-        },
-        filters = {
-          dotfiles = false,
-        },
-      }
-    end,
-  },
-
+  -- {
+  --   'nvim-tree/nvim-tree.lua',
+  --   requires = {
+  --     'nvim-tree/nvim-web-devicons',
+  --   },
+  --   config = function()
+  --     require('nvim-tree').setup {
+  --       view = {
+  --         width = 30,
+  --         side = 'left',
+  --       },
+  --       filters = {
+  --         dotfiles = false,
+  --       },
+  --     }
+  --   end,
+  -- },
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
@@ -390,11 +410,6 @@ require('lazy').setup({
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
-      {
-        'tpope/vim-dadbod',
-        'kristijanhusak/vim-dadbod-ui',
-        'kristijanhusak/vim-dadbod-completion',
-      },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -491,204 +506,6 @@ require('lazy').setup({
     },
   },
   { 'Bilal2453/luvit-meta', lazy = true },
-  {
-    -- Main LSP Configuration
-    'neovim/nvim-lspconfig',
-    dependencies = {
-      -- Automatically install LSPs and related tools to stdpath for Neovim
-      { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
-      'williamboman/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
-
-      -- Useful status updates for LSP.
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
-
-      -- Allows extra capabilities provided by nvim-cmp
-      'hrsh7th/cmp-nvim-lsp',
-    },
-    config = function()
-      vim.api.nvim_create_autocmd('LspAttach', {
-        group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
-        callback = function(event)
-          -- NOTE: Remember that Lua is a real programming language, and as such it is possible
-          -- to define small helper and utility functions so you don't have to repeat yourself.
-          --
-          -- In this case, we create a function that lets us more easily define mappings specific
-          -- for LSP related items. It sets the mode, buffer and description for us each time.
-          local map = function(keys, func, desc, mode)
-            mode = mode or 'n'
-            vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
-          end
-
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-          map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-          map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-          map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-          map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
-          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-
-          -- The following two autocommands are used to highlight references of the
-          -- word under your cursor when your cursor rests there for a little while.
-          --    See `:help CursorHold` for information about when this is executed
-          --
-          -- When you move your cursor, the highlights will be cleared (the second autocommand).
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
-            local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
-            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-              buffer = event.buf,
-              group = highlight_augroup,
-              callback = vim.lsp.buf.document_highlight,
-            })
-
-            vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-              buffer = event.buf,
-              group = highlight_augroup,
-              callback = vim.lsp.buf.clear_references,
-            })
-
-            vim.api.nvim_create_autocmd('LspDetach', {
-              group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
-              callback = function(event2)
-                vim.lsp.buf.clear_references()
-                vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
-              end,
-            })
-          end
-
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
-            map('<leader>th', function()
-              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-            end, '[T]oggle Inlay [H]ints')
-          end
-        end,
-      })
-
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
-
-      --  - cmd (table): Override the default command used to start the server
-      --  - filetypes (table): Override the default list of associated filetypes for the server
-      --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-      --  - settings (table): Override the default settings passed when initializing the server.
-      --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
-      local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
-        tsserver = {},
-        ts_ls = {},
-        volar = {
-          filetypes = { 'vue', 'typescript' },
-          init_options = {
-            vue = {
-              hybridMode = false,
-            },
-          },
-          on_attach = function(client)
-            -- Disable tsserver for Vue files to avoid conflicts
-            if client.name == 'tsserver' or client.name == 'ts_ls' then
-              client.resolved_capabilities.document_formatting = false
-            end
-          end,
-        },
-        -- vuels = { filetypes = { 'vue' } },
-        -- ts_ls = {},
-        lua_ls = {
-          -- cmd = {...},
-          -- filetypes = { ...},
-          -- capabilities = {},
-          settings = {
-            Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
-            },
-          },
-        },
-      }
-
-      -- Ensure the servers and tools above are installed
-      --  To check the current status of installed tools and/or manually install
-      --  other tools, you can run
-      --    :Mason
-      --
-      --  You can press `g?` for help in this menu.
-      require('mason').setup()
-
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-        'volar',
-        'tsserver',
-        'ts_ls',
-      })
-      -- require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-      require('mason-lspconfig').setup { ensure_installed = ensure_installed }
-
-      local lspconfig = require 'lspconfig'
-      require('mason-lspconfig').setup_handlers {
-        function(server_name)
-          local server = servers[server_name] or {}
-
-          if server_name == 'tsserver' or server_name == 'ts_ls' then
-            local mason_registry = require 'mason-registry'
-            local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server'
-
-            server.init_options = {
-              plugins = {
-                {
-                  name = '@vue/typescript-plugin',
-                  location = vue_language_server_path,
-                  languages = { 'vue', 'typescript', 'javascript' },
-                },
-              },
-            }
-            -- return
-            -- server.filetypes = { 'vue', 'json', 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' }
-          end
-          -- if require('neoconf').get(server_name .. '.disable') then
-          --   return
-          -- end
-
-          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-          lspconfig[server_name].setup(server)
-        end,
-      }
-      -- require('mason-lspconfig').setup {
-      --   handlers = {
-      --     function(server_name)
-      --       local server = {}
-      --       -- local server = servers[server_name] or {}
-      --       -- if server_name == 'tsserver' then
-      --       --   -- server.filetypes = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' }
-      --       --   return
-      --       -- end
-      --
-      --       -- if require('neoconf').get(server_name .. '.disable') then
-      --       --   return
-      --       -- end
-      --
-      --       if server_name == 'volar' then
-      --         server.filetypes = { 'vue', 'json', 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' }
-      --       end
-      --
-      --       server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-      --       lspconfig[server_name].setup(server)
-      --     end,
-      --   },
-      -- }
-    end,
-  },
   {
     'catgoose/vue-goto-definition.nvim',
     event = 'BufReadPre',
@@ -891,7 +708,8 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'slate'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -901,52 +719,6 @@ require('lazy').setup({
   -- Highlight todo, notes, etc in comments
   { 'nvim-lua/plenary.nvim' },
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-  {
-    'ThePrimeagen/harpoon',
-    branch = 'harpoon2',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      {
-
-        'nvim-telescope/telescope.nvim',
-        config = function()
-          local harpoon = require 'harpoon'
-
-          -- REQUIRED
-          harpoon:setup()
-          -- REQUIRED
-
-          vim.keymap.set('n', '<leader>a', function()
-            harpoon:list():add()
-          end)
-          vim.keymap.set('n', '<C-e>', function()
-            harpoon.ui:toggle_quick_menu(harpoon:list())
-          end)
-
-          vim.keymap.set('n', '<C-h>', function()
-            harpoon:list():select(1)
-          end)
-          vim.keymap.set('n', '<C-j>', function()
-            harpoon:list():select(2)
-          end)
-          vim.keymap.set('n', '<C-k>', function()
-            harpoon:list():select(3)
-          end)
-          vim.keymap.set('n', '<C-l>', function()
-            harpoon:list():select(4)
-          end)
-
-          -- Toggle previous & next buffers stored within Harpoon list
-          vim.keymap.set('n', '<C-S-P>', function()
-            harpoon:list():prev()
-          end)
-          vim.keymap.set('n', '<C-S-N>', function()
-            harpoon:list():next()
-          end)
-        end,
-      },
-    },
-  },
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
@@ -984,6 +756,22 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+  {
+    'jose-elias-alvarez/null-ls.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      local null_ls = require 'null-ls'
+
+      null_ls.setup {
+        sources = {
+          null_ls.builtins.formatting.prettier.with {
+            filetypes = { 'json', 'jsonc' },
+          },
+          null_ls.builtins.diagnostics.jsonlint, -- Optional: JSON linter
+        },
+      }
+    end,
+  },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
@@ -995,6 +783,7 @@ require('lazy').setup({
         'c',
         'diff',
         'html',
+        'json',
         'lua',
         'luadoc',
         'markdown',
@@ -1033,12 +822,20 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
+  -- APAP - ADDITIONAL PLUGINS
+  require 'kickstart.plugins.rest',
+  require 'kickstart.plugins.my_dbui',
+  require 'kickstart.plugins.harpoon',
+  require 'kickstart.plugins.lsp-treesitter',
+  require 'kickstart.plugins.lsp',
+
+  -- APAP Kickstart Default
+  require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
