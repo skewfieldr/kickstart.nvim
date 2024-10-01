@@ -1,5 +1,4 @@
-return 
-  {
+return {
   -- Main LSP Configuration
   'neovim/nvim-lspconfig',
   dependencies = {
@@ -120,6 +119,7 @@ return
           },
         },
       },
+      ltex = {},
     }
 
     -- Ensure the servers and tools above are installed
@@ -138,6 +138,7 @@ return
       'volar',
       'ts_ls',
       'gopls',
+      'sqlls',
     })
     -- require('mason-tool-installer').setup { ensure_installed = ensure_installed }
     require('mason-lspconfig').setup { ensure_installed = ensure_installed }
